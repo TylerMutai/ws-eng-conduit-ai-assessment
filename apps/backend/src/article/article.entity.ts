@@ -1,8 +1,8 @@
 import {
-  ArrayType,
   Collection,
   Entity,
   EntityDTO,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryKey,
@@ -11,12 +11,14 @@ import {
 } from '@mikro-orm/core';
 import slug from 'slug';
 
-import { User } from '../user/user.entity';
-import { Comment } from './comment.entity';
+import {User} from '../user/user.entity';
+import {Comment} from './comment.entity';
+import {ArticleTag} from "../articleTag/articleTag.entity";
+import {Tag} from "../tag/tag.entity";
 
 @Entity()
 export class Article {
-  @PrimaryKey({ type: 'number' })
+  @PrimaryKey({type: 'number'})
   id: number;
 
   @Property()
@@ -31,22 +33,22 @@ export class Article {
   @Property()
   body = '';
 
-  @Property({ type: 'date' })
+  @Property({type: 'date'})
   createdAt = new Date();
 
-  @Property({ type: 'date', onUpdate: () => new Date() })
+  @Property({type: 'date', onUpdate: () => new Date()})
   updatedAt = new Date();
 
-  @Property({ type: ArrayType })
-  tagList: string[] = [];
+  @ManyToMany({entity: () => Tag, pivotEntity: () => ArticleTag})
+  tagList = new Collection<Tag>(this);
 
   @ManyToOne(() => User)
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.article, { eager: true, orphanRemoval: true })
+  @OneToMany(() => Comment, (comment) => comment.article, {eager: true, orphanRemoval: true})
   comments = new Collection<Comment>(this);
 
-  @Property({ type: 'number' })
+  @Property({type: 'number'})
   favoritesCount = 0;
 
   constructor(author: User, title: string, description: string, body: string) {
@@ -54,31 +56,7 @@ export class Article {
     this.title = title;
     this.description = description;
     this.body = body;
-    this.slug = slug(title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
-  }
-
-
-  setTagList(tags: string | Array<string>) {
-    let newTags = [];
-    const delimiter = ",";
-    if (typeof tags === 'string') {
-      // split tags using [delimiter]
-      newTags = tags.split(delimiter);
-    } else {
-      newTags = [...tags];
-    }
-    this.tagList = this.cleanTags(newTags);
-  }
-
-  private cleanTags(tags: Array<string>): Array<string> {
-    const newTags = [];
-    for (const tag of tags) {
-      const cleanTag = tag?.trim()?.toLowerCase();
-      if (cleanTag) {
-        newTags.push(cleanTag);
-      }
-    }
-    return newTags;
+    this.slug = slug(title, {lower: true}) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
   toJSON(user?: User) {

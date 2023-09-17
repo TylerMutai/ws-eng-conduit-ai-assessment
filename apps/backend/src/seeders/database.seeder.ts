@@ -1,8 +1,8 @@
-import { EntityManager } from '@mikro-orm/core';
-import { Seeder } from '@mikro-orm/seeder';
-import { Article } from '../article/article.entity';
-import { Tag } from '../tag/tag.entity';
-import { User } from '../user/user.entity';
+import {EntityManager} from '@mikro-orm/core';
+import {Seeder} from '@mikro-orm/seeder';
+import {Article} from '../article/article.entity';
+import {Tag} from '../tag/tag.entity';
+import {User} from '../user/user.entity';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -21,7 +21,7 @@ export class DatabaseSeeder extends Seeder {
         slug: 'how-to-do-something',
         title: 'How to do something',
         description: 'Lorem ipsum dolor sit amet',
-        tagList: [tags.coding.tag, tags.javascript.tag],
+        tagList: [tags.coding, tags.javascript],
         body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, diam id aliquam aliquam, nunc ipsum aliquet nunc, vitae aliq',
         favoritesCount: 3,
         createdAt: new Date(),
@@ -31,7 +31,7 @@ export class DatabaseSeeder extends Seeder {
         author: authors.zolly,
         slug: 'how-to-do-something-else',
         title: 'How to do something else',
-        tagList: [tags.coding.tag, tags.angular.tag],
+        tagList: [tags.coding, tags.angular],
         description: 'Sed euismod',
         body: 'Sed euismod, diam id aliquam aliquam, nunc i consectetur adipiscing elit. Sed euismod, diam id aliquam aliquam, nunc ipsum aliquet nunc, vitae aliq',
         favoritesCount: 7,
@@ -44,10 +44,10 @@ export class DatabaseSeeder extends Seeder {
 
   private getTags(em: EntityManager): Record<string, Tag> {
     return {
-      coding: em.create(Tag, { tag: 'coding' }),
-      javascript: em.create(Tag, { tag: 'javascript' }),
-      angular: em.create(Tag, { tag: 'angular' }),
-      react: em.create(Tag, { tag: 'react' }),
+      coding: em.create(Tag, {tag: 'coding'}),
+      javascript: em.create(Tag, {tag: 'javascript'}),
+      angular: em.create(Tag, {tag: 'angular'}),
+      react: em.create(Tag, {tag: 'react'}),
     };
   }
 

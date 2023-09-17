@@ -8,6 +8,9 @@ import {Article} from './article.entity';
 import {IArticleRO, IArticlesRO, ICommentsRO} from './article.interface';
 import {Comment} from './comment.entity';
 import {CreateArticleDto, CreateCommentDto} from './dto';
+import {Tag} from "../tag/tag.entity";
+import {IArticleTagRO} from "../articleTag/articleTag.interface";
+import {ArticleTag} from "../articleTag/articleTag.entity";
 
 @Injectable()
 export class ArticleService {
@@ -19,6 +22,8 @@ export class ArticleService {
     private readonly commentRepository: EntityRepository<Comment>,
     @InjectRepository(User)
     private readonly userRepository: EntityRepository<User>,
+    @InjectRepository(Tag)
+    private readonly tagRepository: EntityRepository<Tag>,
   ) {
   }
 
@@ -155,10 +160,10 @@ export class ArticleService {
       {populate: ['followers', 'favorites', 'articles']},
     );
     const article = new Article(user!, dto.title, dto.description, dto.body);
-    article.setTagList(dto.tagList);
     user?.articles.add(article);
     await this.em.flush();
-
+    const tags = this.tagsToArticleTags(await this.generateMissingTagsFromString(dto.tagList), article);
+    await this.em.upsertMany(ArticleTag, tags.map(t => ({article: t.articleId, tag: t.tagId})));
     return {article: article.toJSON(user!)};
   }
 
@@ -170,7 +175,6 @@ export class ArticleService {
     const article = await this.articleRepository.findOne({slug}, {populate: ['author']});
     delete articleData.createdAt;
     wrap(article).assign(articleData);
-    article?.setTagList(articleData.tagList || []);
     await this.em.flush();
 
     return {article: article!.toJSON(user!)};
@@ -179,4 +183,62 @@ export class ArticleService {
   async delete(slug: string) {
     return this.articleRepository.nativeDelete({slug});
   }
+
+  tagsToArticleTags(tags: Tag[], article: Article): IArticleTagRO[] {
+    const articleTags: IArticleTagRO[] = [];
+    for (const t of tags) {
+      articleTags.push({
+        articleId: article.id,
+        tagId: t.id
+      });
+    }
+    return articleTags;
+  }
+
+  async generateMissingTagsFromString(tags: string | Array<string>): Promise<Tag[]> {
+    let newTags: string[];
+    const delimiter = ',';
+    if (typeof tags === 'string') {
+      // split tags using [delimiter]
+      newTags = tags.split(delimiter);
+    } else {
+      newTags = [...tags];
+    }
+
+    const cleanedTags = this.cleanTags(newTags);
+    const tagsList = await this.tagRepository.findAll();
+    const nameToIdMapping = new Map<string, number>();
+    for (const tag of tagsList) {
+      nameToIdMapping.set(this.getCleanedTagName(tag.tag), tag.id);
+    }
+
+    const newTagEntities: Tag[] = [];
+    for (const cleanedTag of cleanedTags) {
+      const t = new Tag();
+      const id = nameToIdMapping.get(cleanedTag)
+      if (id) {
+        t.id = id;
+      }
+      t.tag = cleanedTag;
+      newTagEntities.push(t);
+    }
+    return await this.tagRepository.upsertMany(newTagEntities);
+  }
+
+  private cleanTags(tags: Array<string>): Array<string> {
+    const newTags = [];
+    for (const tag of tags) {
+      const cleanTag = this.getCleanedTagName(tag);
+      if (cleanTag) {
+        newTags.push(cleanTag);
+      }
+    }
+    return newTags;
+  }
+
+  private getCleanedTagName(tagName: string) {
+    return tagName.trim().toLowerCase();
+  }
+
+
 }

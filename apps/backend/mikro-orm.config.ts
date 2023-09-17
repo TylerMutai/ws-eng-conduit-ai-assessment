@@ -11,6 +11,11 @@ import {Tag} from './src/tag/tag.entity';
 import {Article} from './src/article/article.entity';
 import {Comment} from './src/article/comment.entity';
 import {InitialMigration} from './src/migrations/InitialMigration';
+import {ArticleTag} from "./src/articleTag/articleTag.entity";
+import {
+  Migration20230917161002_added_article_tag_pivot
+} from "./src/migrations/Migration20230917161002_added_article_tag_pivot";
+import {NDeleteTagListFieldFromArticles} from "./src/migrations/NDeleteTagListFieldFromArticles";
 
 export default defineConfig({
   host: '127.0.0.1',
@@ -24,9 +29,17 @@ export default defineConfig({
         name: 'InitialMigration',
         class: InitialMigration,
       },
+      {
+        name: 'Migration20230917161002_added_article_tag_pivot',
+        class: Migration20230917161002_added_article_tag_pivot,
+      },
+      {
+        name: 'DeleteTagListFieldFromArticles',
+        class: NDeleteTagListFieldFromArticles,
+      },
     ],
   },
-  entities: [User, Tag, Article, Comment],
+  entities: [User, Tag, Article, ArticleTag, Comment],
   discovery: {disableDynamicFileAccess: true},
   seeder: {
     pathTs: join(__dirname, 'src', 'seeders'),

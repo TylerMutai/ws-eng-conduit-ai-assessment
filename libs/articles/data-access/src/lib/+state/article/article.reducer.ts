@@ -1,8 +1,8 @@
-import {Article, Comment} from '@realworld/core/api-types';
-import {createFeature, createReducer, on} from '@ngrx/store';
-import {articleActions} from './article.actions';
-import {articlesActions} from '../articles.actions';
-import {articleEditActions} from '../article-edit/article-edit.actions';
+import { Article, Comment } from '@realworld/core/api-types';
+import { createFeature, createReducer, on } from '@ngrx/store';
+import { articleActions } from './article.actions';
+import { articlesActions } from '../articles.actions';
+import { articleEditActions } from '../article-edit/article-edit.actions';
 
 export interface ArticleState {
   data: Article;
