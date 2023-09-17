@@ -57,6 +57,30 @@ export class Article {
     this.slug = slug(title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
+
+  setTagList(tags: string | Array<string>) {
+    let newTags = [];
+    const delimiter = ",";
+    if (typeof tags === 'string') {
+      // split tags using [delimiter]
+      newTags = tags.split(delimiter);
+    } else {
+      newTags = [...tags];
+    }
+    this.tagList = this.cleanTags(newTags);
+  }
+
+  private cleanTags(tags: Array<string>): Array<string> {
+    const newTags = [];
+    for (const tag of tags) {
+      const cleanTag = tag?.trim()?.toLowerCase();
+      if (cleanTag) {
+        newTags.push(cleanTag);
+      }
+    }
+    return newTags;
+  }
+
   toJSON(user?: User) {
     const o = wrap<Article>(this).toObject() as ArticleDTO;
     o.favorited = user && user.favorites.isInitialized() ? user.favorites.contains(this) : false;
