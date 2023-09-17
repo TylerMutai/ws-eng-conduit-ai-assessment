@@ -15,8 +15,8 @@ import { InitialMigration } from './src/migrations/InitialMigration';
 export default defineConfig({
   host: 'localhost',
   port: 3306,
-  user: 'conduit',
-  password: 'conduit',
+  user: 'phpmyadmin',
+  password: 'phpmyadmin',
   dbName: 'conduit',
   migrations: {
     migrationsList: [
