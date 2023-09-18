@@ -10,7 +10,7 @@ import {Comment} from './comment.entity';
 import {CreateArticleDto, CreateCommentDto} from './dto';
 import {Tag} from '../tag/tag.entity';
 import {IArticleTagRO} from '../articleTag/articleTag.interface';
-import {ArticleTag} from "../articleTag/articleTag.entity";
+import {ArticleTag} from '../articleTag/articleTag.entity';
 
 @Injectable()
 export class ArticleService {
@@ -31,10 +31,18 @@ export class ArticleService {
     const user = userId
       ? await this.userRepository.findOne(userId, {populate: ['followers', 'favorites']})
       : undefined;
-    const qb = this.articleRepository.createQueryBuilder('a').select('a.*').leftJoin('a.author', 'u').leftJoinAndSelect('a.tagList', 'at');
+    const qb = this.articleRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .leftJoin('a.author', 'u')
+      .leftJoinAndSelect('a.tagList', 'at');
 
     if ('tag' in query) {
-      qb.where({'at.name': [new RegExp(query.tag)]});
+      qb.where({
+        'at.tag': {
+          $like: query.tag?.toLowerCase()
+        }
+      });
     }
 
     if ('author' in query) {
@@ -161,7 +169,9 @@ export class ArticleService {
     const article = new Article(user!, dto.title, dto.description, dto.body);
     user?.articles.add(article);
     await this.em.flush();
-    await this.addArticleTagsToTransaction(this.tagsToArticleTags(await this.generateMissingTagsFromString(dto.tagList), article));
+    await this.addArticleTagsToTransaction(
+      this.tagsToArticleTags(await this.generateMissingTagsFromString(dto.tagList), article),
+    );
     return {article: article.toJSON(user!)};
   }
 
@@ -173,7 +183,9 @@ export class ArticleService {
     const article = await this.articleRepository.findOne({slug}, {populate: ['author']});
     delete articleData.createdAt;
     if (article) {
-      await this.addArticleTagsToTransaction(this.tagsToArticleTags(await this.generateMissingTagsFromString(articleData.tagList), article));
+      await this.addArticleTagsToTransaction(
+        this.tagsToArticleTags(await this.generateMissingTagsFromString(articleData.tagList), article),
+      );
       delete articleData.tagList;
     }
     wrap(article).assign(articleData);

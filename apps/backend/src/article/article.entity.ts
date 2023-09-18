@@ -11,14 +11,14 @@ import {
 } from '@mikro-orm/core';
 import slug from 'slug';
 
-import {User} from '../user/user.entity';
-import {Comment} from './comment.entity';
-import {ArticleTag} from '../articleTag/articleTag.entity';
-import {Tag} from '../tag/tag.entity';
+import { User } from '../user/user.entity';
+import { Comment } from './comment.entity';
+import { ArticleTag } from '../articleTag/articleTag.entity';
+import { Tag } from '../tag/tag.entity';
 
 @Entity()
 export class Article {
-  @PrimaryKey({type: 'number'})
+  @PrimaryKey({ type: 'number' })
   id: number;
 
   @Property()
@@ -33,22 +33,22 @@ export class Article {
   @Property()
   body = '';
 
-  @Property({type: 'date'})
+  @Property({ type: 'date' })
   createdAt = new Date();
 
-  @Property({type: 'date', onUpdate: () => new Date()})
+  @Property({ type: 'date', onUpdate: () => new Date() })
   updatedAt = new Date();
 
-  @ManyToMany({entity: () => Tag, pivotEntity: () => ArticleTag})
+  @ManyToMany({ entity: () => Tag, pivotEntity: () => ArticleTag })
   tagList = new Collection<Tag>(this);
 
   @ManyToOne(() => User)
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.article, {eager: true, orphanRemoval: true})
+  @OneToMany(() => Comment, (comment) => comment.article, { eager: true, orphanRemoval: true })
   comments = new Collection<Comment>(this);
 
-  @Property({type: 'number'})
+  @Property({ type: 'number' })
   favoritesCount = 0;
 
   constructor(author: User, title: string, description: string, body: string) {
@@ -56,19 +56,19 @@ export class Article {
     this.title = title;
     this.description = description;
     this.body = body;
-    this.slug = slug(title, {lower: true}) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+    this.slug = slug(title, { lower: true }) + '-' + ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
   }
 
   toJSON(user?: User) {
     const o = wrap<Article>(this).toObject() as ArticleDTO;
     o.favorited = user && user.favorites.isInitialized() ? user.favorites.contains(this) : false;
     o.author = this.author.toJSON(user);
-    o.tags = this.tagList?.toJSON()?.map(t => t.tag);
+    o.tags = this.tagList?.toJSON()?.map((t) => t.tag);
     return o;
   }
 }
 
 export interface ArticleDTO extends EntityDTO<Article> {
   favorited?: boolean;
-  tags: string[]
+  tags: string[];
 }
