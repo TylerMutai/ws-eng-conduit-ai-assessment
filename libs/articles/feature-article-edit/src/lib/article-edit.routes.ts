@@ -1,10 +1,10 @@
-import {Routes} from '@angular/router';
-import {provideEffects} from '@ngrx/effects';
-import {provideState} from '@ngrx/store';
-import {articleEditEffects, articleEffects, articleFeature} from '@realworld/articles/data-access';
-import {authGuard} from '@realworld/auth/data-access';
-import {ArticleEditComponent} from './article-edit.component';
-import {articleEditResolver} from './resolvers/article-edit-resolver';
+import { Routes } from '@angular/router';
+import { provideEffects } from '@ngrx/effects';
+import { provideState } from '@ngrx/store';
+import { articleEditEffects, articleEffects, articleFeature } from '@realworld/articles/data-access';
+import { authGuard } from '@realworld/auth/data-access';
+import { ArticleEditComponent } from './article-edit.component';
+import { articleEditResolver } from './resolvers/article-edit-resolver';
 
 export const ARTICLE_EDIT_ROUTES: Routes = [
   {
@@ -21,7 +21,7 @@ export const ARTICLE_EDIT_ROUTES: Routes = [
       {
         path: ':slug',
         component: ArticleEditComponent,
-        resolve: {articleEditResolver},
+        resolve: { articleEditResolver },
       },
     ],
   },

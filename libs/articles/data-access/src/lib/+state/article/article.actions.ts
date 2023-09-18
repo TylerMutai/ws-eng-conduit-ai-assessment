@@ -1,5 +1,5 @@
-import {createActionGroup, emptyProps, props} from '@ngrx/store';
-import {Article, Comment, Profile, UserNoAuth} from '@realworld/core/api-types';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { Article, Comment, Profile, UserNoAuth } from '@realworld/core/api-types';
 
 export const articleActions = createActionGroup({
   source: 'Article',

@@ -1,56 +1,56 @@
-import {inject} from '@angular/core';
-import {Actions, concatLatestFrom, createEffect, ofType} from '@ngrx/effects';
-import {catchError, concatMap, exhaustMap, map, of, tap} from 'rxjs';
-import {ActionsService} from '../../services/actions.service';
-import {articleActions} from './article.actions';
-import {ArticlesService} from '../../services/articles.service';
-import {formsActions, ngrxFormsQuery} from '@realworld/core/forms/src';
-import {Store} from '@ngrx/store';
-import {Router} from '@angular/router';
+import { inject } from '@angular/core';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
+import { catchError, concatMap, exhaustMap, map, of, tap } from 'rxjs';
+import { ActionsService } from '../../services/actions.service';
+import { articleActions } from './article.actions';
+import { ArticlesService } from '../../services/articles.service';
+import { formsActions, ngrxFormsQuery } from '@realworld/core/forms/src';
+import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 export const unFollow$ = createEffect(
   (actions$ = inject(Actions), actionsService = inject(ActionsService)) => {
     return actions$.pipe(
       ofType(articleActions.unfollow),
-      concatMap(({username}) =>
+      concatMap(({ username }) =>
         actionsService.unfollowUser(username).pipe(
-          map((response) => articleActions.unfollowSuccess({profile: response.profile})),
+          map((response) => articleActions.unfollowSuccess({ profile: response.profile })),
           catchError((error) => of(articleActions.unfollowFailure(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const follow$ = createEffect(
   (actions$ = inject(Actions), actionsService = inject(ActionsService)) => {
     return actions$.pipe(
       ofType(articleActions.follow),
-      concatMap(({username}) =>
+      concatMap(({ username }) =>
         actionsService.followUser(username).pipe(
-          map((response) => articleActions.followSuccess({profile: response.profile})),
+          map((response) => articleActions.followSuccess({ profile: response.profile })),
           catchError((error) => of(articleActions.followFailure(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const deleteComment$ = createEffect(
   (actions$ = inject(Actions), articlesService = inject(ArticlesService)) => {
     return actions$.pipe(
       ofType(articleActions.deleteComment),
-      concatMap(({commentId, slug}) =>
+      concatMap(({ commentId, slug }) =>
         articlesService.deleteComment(commentId, slug).pipe(
-          map((_) => articleActions.deleteCommentSuccess({commentId})),
+          map((_) => articleActions.deleteCommentSuccess({ commentId })),
           catchError((error) => of(articleActions.deleteCommentFailure(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const addComment$ = createEffect(
@@ -58,15 +58,15 @@ export const addComment$ = createEffect(
     return actions$.pipe(
       ofType(articleActions.addComment),
       concatLatestFrom(() => store.select(ngrxFormsQuery.selectData)),
-      exhaustMap(([{slug}, data]) =>
+      exhaustMap(([{ slug }, data]) =>
         articlesService.addComment(slug, data.comment).pipe(
-          map((response) => articleActions.addCommentSuccess({comment: response.comment})),
-          catchError(({error}) => of(formsActions.setErrors({errors: error.errors}))),
+          map((response) => articleActions.addCommentSuccess({ comment: response.comment })),
+          catchError(({ error }) => of(formsActions.setErrors({ errors: error.errors }))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const addCommentSuccess$ = createEffect(
@@ -76,7 +76,7 @@ export const addCommentSuccess$ = createEffect(
       map(() => formsActions.resetForm()),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const loadArticle$ = createEffect(
@@ -85,13 +85,13 @@ export const loadArticle$ = createEffect(
       ofType(articleActions.loadArticle),
       concatMap((action) =>
         articlesService.getArticle(action.slug).pipe(
-          map((response) => articleActions.loadArticleSuccess({article: response.article})),
+          map((response) => articleActions.loadArticleSuccess({ article: response.article })),
           catchError((error) => of(articleActions.loadArticleFailure(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const loadAuthors$ = createEffect(
@@ -100,13 +100,13 @@ export const loadAuthors$ = createEffect(
       ofType(articleActions.loadAuthors),
       concatMap(() =>
         articlesService.getUsers().pipe(
-          map((response) => articleActions.loadAuthorsSuccess({authors: response})),
+          map((response) => articleActions.loadAuthorsSuccess({ authors: response })),
           catchError((error) => of(articleActions.loadAuthorsSuccess(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const loadComments$ = createEffect(
@@ -115,13 +115,13 @@ export const loadComments$ = createEffect(
       ofType(articleActions.loadComments),
       concatMap((action) =>
         articlesService.getComments(action.slug).pipe(
-          map((data) => articleActions.loadCommentsSuccess({comments: data.comments})),
+          map((data) => articleActions.loadCommentsSuccess({ comments: data.comments })),
           catchError((error) => of(articleActions.loadCommentsFailure(error))),
         ),
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const deleteArticle$ = createEffect(
@@ -136,7 +136,7 @@ export const deleteArticle$ = createEffect(
       ),
     );
   },
-  {functional: true},
+  { functional: true },
 );
 
 export const deleteArticleSuccess$ = createEffect(
@@ -146,5 +146,5 @@ export const deleteArticleSuccess$ = createEffect(
       tap(() => router.navigate(['/'])),
     );
   },
-  {functional: true, dispatch: false},
+  { functional: true, dispatch: false },
 );

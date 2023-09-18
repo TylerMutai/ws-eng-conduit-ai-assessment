@@ -1,25 +1,24 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {validate} from 'class-validator';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { validate } from 'class-validator';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import {EntityManager, wrap} from '@mikro-orm/core';
-import {SECRET} from '../config';
-import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
-import {User} from './user.entity';
-import {IUserDataNoAuth, IUserRO} from './user.interface';
-import {UserRepository} from './user.repository';
+import { EntityManager, wrap } from '@mikro-orm/core';
+import { SECRET } from '../config';
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
+import { User } from './user.entity';
+import { IUserDataNoAuth, IUserRO } from './user.interface';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository, private readonly em: EntityManager) {
-  }
+  constructor(private readonly userRepository: UserRepository, private readonly em: EntityManager) {}
 
   async findAll(): Promise<User[]> {
     return this.userRepository.findAll();
   }
 
   async findAllV2(): Promise<IUserDataNoAuth[]> {
-    return (await this.userRepository.findAll()).map(u => this.buildUserROWithoutAuth(u));
+    return (await this.userRepository.findAll()).map((u) => this.buildUserROWithoutAuth(u));
   }
 
   async findOne(loginUserDto: LoginUserDto): Promise<User> {
@@ -33,14 +32,14 @@ export class UserService {
 
   async create(dto: CreateUserDto): Promise<IUserRO> {
     // check uniqueness of username/email
-    const {username, email, password} = dto;
-    const exists = await this.userRepository.count({$or: [{username}, {email}]});
+    const { username, email, password } = dto;
+    const exists = await this.userRepository.count({ $or: [{ username }, { email }] });
 
     if (exists > 0) {
       throw new HttpException(
         {
           message: 'Input data validation failed',
-          errors: {username: 'Username and email must be unique.'},
+          errors: { username: 'Username and email must be unique.' },
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -54,7 +53,7 @@ export class UserService {
       throw new HttpException(
         {
           message: 'Input data validation failed',
-          errors: {username: 'Userinput is not valid.'},
+          errors: { username: 'Userinput is not valid.' },
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -73,22 +72,22 @@ export class UserService {
   }
 
   async delete(email: string) {
-    return this.userRepository.nativeDelete({email});
+    return this.userRepository.nativeDelete({ email });
   }
 
   async findById(id: number): Promise<IUserRO> {
     const user = await this.userRepository.findOne(id);
 
     if (!user) {
-      const errors = {User: ' not found'};
-      throw new HttpException({errors}, 401);
+      const errors = { User: ' not found' };
+      throw new HttpException({ errors }, 401);
     }
 
     return this.buildUserRO(user);
   }
 
   async findByEmail(email: string): Promise<IUserRO> {
-    const user = await this.userRepository.findOneOrFail({email});
+    const user = await this.userRepository.findOneOrFail({ email });
     return this.buildUserRO(user);
   }
 
@@ -117,7 +116,7 @@ export class UserService {
       username: user.username,
     };
 
-    return userRO
+    return userRO;
   }
 
   private buildUserRO(user: User) {
@@ -129,6 +128,6 @@ export class UserService {
       username: user.username,
     };
 
-    return {user: userRO};
+    return { user: userRO };
   }
 }

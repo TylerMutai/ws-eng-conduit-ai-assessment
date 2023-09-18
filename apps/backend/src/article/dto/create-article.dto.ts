@@ -3,5 +3,5 @@ export class CreateArticleDto {
   readonly description: string;
   readonly body: string;
   readonly tagList: string[];
-  readonly co_authors: number[]
+  readonly co_authors: number[];
 }

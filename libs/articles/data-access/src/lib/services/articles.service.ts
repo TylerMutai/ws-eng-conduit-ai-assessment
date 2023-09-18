@@ -1,20 +1,19 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {ApiService} from '@realworld/core/http-client';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiService } from '@realworld/core/http-client';
 import {
   Article,
   ArticleResponse,
   MultipleCommentsResponse,
   SingleCommentResponse,
-  UserNoAuth
+  UserNoAuth,
 } from '@realworld/core/api-types';
-import {ArticleListConfig} from '../+state/article-list/article-list.reducer';
-import {HttpParams} from '@angular/common/http';
+import { ArticleListConfig } from '../+state/article-list/article-list.reducer';
+import { HttpParams } from '@angular/common/http';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ArticlesService {
-  constructor(private apiService: ApiService) {
-  }
+  constructor(private apiService: ApiService) {}
 
   getUsers(): Observable<UserNoAuth[]> {
     return this.apiService.get<UserNoAuth[]>('/users/');
@@ -38,7 +37,7 @@ export class ArticlesService {
 
   addComment(slug: string, payload = ''): Observable<SingleCommentResponse> {
     return this.apiService.post<SingleCommentResponse, { comment: { body: string } }>(`/articles/${slug}/comments`, {
-      comment: {body: payload},
+      comment: { body: payload },
     });
   }
 
@@ -55,7 +54,7 @@ export class ArticlesService {
         article: article,
       });
     }
-    return this.apiService.post<ArticleResponse, ArticleResponse>('/articles/', {article: article});
+    return this.apiService.post<ArticleResponse, ArticleResponse>('/articles/', { article: article });
   }
 
   // TODO: remove any

@@ -1,15 +1,17 @@
 <fieldset [formGroup]="group" class="form-group select-container">
   <div class="input-value" [formArrayName]="field.name">
-    <div *ngFor="let control of values()?.controls || []; let i=index;" [formGroupName]="i"
-         class="input-value-inner">
+    <div *ngFor="let control of values()?.controls || []; let i = index" [formGroupName]="i" class="input-value-inner">
       <p class="input-value-heading">
-        {{control.value?.label?.substring(0, 1)}}
+        {{ control.value?.label?.substring(0, 1) }}
       </p>
       <p class="input-value-text">
-        {{control.value?.label}}
+        {{ control.value?.label }}
       </p>
-      <img src="/assets/articles/remove-circle.svg" (click)="removeValue(control.value)"
-           class="input-value-remove-icon">
+      <img
+        src="/assets/articles/remove-circle.svg"
+        (click)="removeValue(control.value)"
+        class="input-value-remove-icon"
+      />
     </div>
     <input
       [attr.placeholder]="field?.placeholder"
@@ -17,11 +19,12 @@
       (input)="onInputChange($event)"
       (focusout)="onInputFocusOut()"
       (focusin)="onInputFocusIn()"
-      [attr.type]="field?.attrs?.type || 'text'"/>
+      [attr.type]="field?.attrs?.type || 'text'"
+    />
   </div>
   <div class="select-input-search-results" *ngIf="shouldShowSearch">
     <div class="select-input-search-results-row" *ngFor="let val of searchResults" (click)="addValue(val)">
-      {{val.label }}
+      {{ val.label }}
     </div>
   </div>
 </fieldset>

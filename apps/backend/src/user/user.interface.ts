@@ -7,7 +7,7 @@ export interface IUserData {
 }
 
 export interface IUserDataNoAuth {
-  id: number,
+  id: number;
   bio: string;
   email: string;
   image?: string;

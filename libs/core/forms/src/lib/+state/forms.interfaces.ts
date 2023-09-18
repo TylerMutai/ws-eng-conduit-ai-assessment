@@ -1,4 +1,4 @@
-import {ValidatorFn} from '@angular/forms';
+import { ValidatorFn } from '@angular/forms';
 
 export interface Field {
   type: FieldType;
@@ -7,8 +7,8 @@ export interface Field {
   placeholder?: string;
   validator?: ValidatorFn[];
   attrs?: any;
-  inputValues?: MultiSelectField[],
-  selectValues?: MultiSelectField[],
+  inputValues?: MultiSelectField[];
+  selectValues?: MultiSelectField[];
 }
 
 export type FieldType = 'INPUT' | 'TEXTAREA' | 'SELECT';
@@ -18,6 +18,6 @@ export interface Errors {
 }
 
 export interface MultiSelectField {
-  label: string,
-  value: string
+  label: string;
+  value: string;
 }

@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Field, MultiSelectField} from '../../+state/forms.interfaces';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {NgForOf, NgIf} from "@angular/common";
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Field, MultiSelectField } from '../../+state/forms.interfaces';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'cdt-input',
@@ -15,9 +15,9 @@ export class SelectComponent {
   @Input() field!: Field;
   @Input() group!: FormGroup;
 
-  shouldShowSearch: boolean
+  shouldShowSearch: boolean;
 
-  searchResults: MultiSelectField[]
+  searchResults: MultiSelectField[];
 
   constructor(private fb: FormBuilder) {
     this.shouldShowSearch = false;
@@ -25,11 +25,11 @@ export class SelectComponent {
   }
 
   values(): FormArray {
-    const arr = this.group.get(this.field?.name)
+    const arr = this.group.get(this.field?.name);
     if (!arr) {
-      this.group.addControl(this.field?.name, this.fb.array([]))
+      this.group.addControl(this.field?.name, this.fb.array([]));
     }
-    return this.group.get(this.field?.name) as FormArray
+    return this.group.get(this.field?.name) as FormArray;
   }
 
   addValue(value: MultiSelectField) {
@@ -52,7 +52,7 @@ export class SelectComponent {
     for (let i = 0; i < this.values().length; i++) {
       if (this.values().at(i)?.value === val?.value) {
         index = i;
-        break
+        break;
       }
     }
     if (index >= 0) {
@@ -62,7 +62,8 @@ export class SelectComponent {
 
   onInputChange(e: any) {
     this.shouldShowSearch = true;
-    this.searchResults = this.field.selectValues?.filter(v => `${v.label}`?.toLocaleLowerCase()?.includes(e.target.value)) || [];
+    this.searchResults =
+      this.field.selectValues?.filter((v) => `${v.label}`?.toLocaleLowerCase()?.includes(e.target.value)) || [];
   }
 
   onInputFocusIn() {
@@ -73,7 +74,6 @@ export class SelectComponent {
   onInputFocusOut() {
     setTimeout(() => {
       this.shouldShowSearch = false;
-    }, 300)
-
+    }, 300);
   }
 }
