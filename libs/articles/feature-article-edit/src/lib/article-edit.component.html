@@ -1,9 +1,7 @@
 <div class="editor-page">
   <div class="article-add-edit-container">
     <div class="article-add-edit-container-inner">
-      <h3 class="article-add-edit-heading">
-        Create Article
-      </h3>
+      <h3 class="article-add-edit-heading">Create Article</h3>
       <div class="article-add-edit-container-inner-form">
         <cdt-list-errors></cdt-list-errors>
         <cdt-dynamic-form (updateForm)="updateForm($event)" [data$]="data$" [structure$]="structure$">
@@ -11,7 +9,7 @@
         <div class="publish-article-button-container">
           <button class="publish-article-button" type="button" (click)="submit()">
             Publish Article
-            <img class="publish-article-button-right-arrow" src="/assets/articles/arrow-right.svg" alt="right"/>
+            <img class="publish-article-button-right-arrow" src="/assets/articles/arrow-right.svg" alt="right" />
           </button>
         </div>
       </div>

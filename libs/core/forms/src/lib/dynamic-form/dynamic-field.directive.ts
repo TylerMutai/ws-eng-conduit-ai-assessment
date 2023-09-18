@@ -1,9 +1,9 @@
-import {ComponentRef, Directive, Input, OnChanges, OnInit, Type, ViewContainerRef} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import { ComponentRef, Directive, Input, OnChanges, OnInit, Type, ViewContainerRef } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
-import {Field} from '../+state/forms.interfaces';
-import {InputComponent} from '../fields/input/input.component';
-import {TextareaComponent} from '../fields/textarea/textarea.component';
+import { Field } from '../+state/forms.interfaces';
+import { InputComponent } from '../fields/input/input.component';
+import { TextareaComponent } from '../fields/textarea/textarea.component';
 
 type Components = InputComponent | TextareaComponent;
 
