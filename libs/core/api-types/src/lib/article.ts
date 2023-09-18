@@ -1,4 +1,4 @@
-import { Profile } from './profile';
+import {Profile} from './profile';
 
 export interface Article {
   slug: string;
@@ -7,7 +7,7 @@ export interface Article {
   body: string;
   tagList: string[];
   tags: string[];
-  co_authors: any[];
+  co_authors?: any[];
   createdAt: string;
   updatedAt: string;
   favorited: boolean;
