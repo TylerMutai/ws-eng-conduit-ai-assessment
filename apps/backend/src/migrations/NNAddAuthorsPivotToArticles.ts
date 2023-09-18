@@ -1,4 +1,4 @@
-import {Migration} from '@mikro-orm/migrations';
+import { Migration } from '@mikro-orm/migrations';
 
 export class NNAddAuthorsPivotToArticles extends Migration {
   async up(): Promise<void> {
