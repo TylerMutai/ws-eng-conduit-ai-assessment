@@ -1,33 +1,44 @@
-import { DynamicFormComponent, Field, formsActions, ListErrorsComponent, ngrxFormsQuery } from '@realworld/core/forms';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { Validators } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Store } from '@ngrx/store';
-import { articleEditActions, articleQuery } from '@realworld/articles/data-access';
+import {DynamicFormComponent, Field, formsActions, ListErrorsComponent, ngrxFormsQuery} from '@realworld/core/forms';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {Validators} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Store} from '@ngrx/store';
+import {articleEditActions, articleQuery} from '@realworld/articles/data-access';
 
 const structure: Field[] = [
   {
     type: 'INPUT',
     name: 'title',
-    placeholder: 'Article Title',
+    label: 'Article Title',
+    placeholder: 'Enter a cool & snappy title',
     validator: [Validators.required],
   },
   {
     type: 'INPUT',
     name: 'description',
+    label: "What's this article about?",
     placeholder: "What's this article about?",
     validator: [Validators.required],
   },
   {
     type: 'TEXTAREA',
     name: 'body',
-    placeholder: 'Write your article (in markdown)',
+    label: 'Article',
+    placeholder: 'Write your article',
     validator: [Validators.required],
   },
   {
     type: 'INPUT',
     name: 'tagList',
-    placeholder: 'Enter Tags',
+    label: 'Tags',
+    placeholder: 'Add Tags',
+    validator: [],
+  },
+  {
+    type: 'INPUT',
+    name: 'co_authors',
+    label: 'Co-authors',
+    placeholder: 'Add Co-authors',
     validator: [],
   },
 ];
@@ -45,19 +56,20 @@ export class ArticleEditComponent implements OnInit, OnDestroy {
   structure$ = this.store.select(ngrxFormsQuery.selectStructure);
   data$ = this.store.select(ngrxFormsQuery.selectData);
 
-  constructor(private readonly store: Store) {}
+  constructor(private readonly store: Store) {
+  }
 
   ngOnInit() {
-    this.store.dispatch(formsActions.setStructure({ structure }));
+    this.store.dispatch(formsActions.setStructure({structure}));
 
     this.store
       .select(articleQuery.selectData)
       .pipe(untilDestroyed(this))
-      .subscribe((article) => this.store.dispatch(formsActions.setData({ data: article })));
+      .subscribe((article) => this.store.dispatch(formsActions.setData({data: article})));
   }
 
   updateForm(changes: any) {
-    this.store.dispatch(formsActions.updateData({ data: changes }));
+    this.store.dispatch(formsActions.updateData({data: changes}));
   }
 
   submit() {
