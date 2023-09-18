@@ -1,11 +1,11 @@
-import { Field } from '../+state/forms.interfaces';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, filter, map, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { CommonModule } from '@angular/common';
-import { DynamicFieldDirective } from './dynamic-field.directive';
+import {Field} from '../+state/forms.interfaces';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {combineLatest, Observable} from 'rxjs';
+import {debounceTime, filter, map, tap} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CommonModule} from '@angular/common';
+import {DynamicFieldDirective} from './dynamic-field.directive';
 
 @UntilDestroy()
 @Component({
@@ -23,7 +23,8 @@ export class DynamicFormComponent implements OnInit {
   @Output() updateForm: EventEmitter<any> = new EventEmitter();
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+  }
 
   ngOnInit() {
     this.structure$
@@ -48,7 +49,7 @@ export class DynamicFormComponent implements OnInit {
 
   private formBuilder = (structure: Field[]): FormGroup => {
     const group = this.fb.group({});
-    structure.forEach((field) => group.addControl(field.name, this.control(field)));
+    structure.forEach((field) => group.addControl(field.name, field.type === 'SELECT' ? this.formArray(field) : this.control(field)));
     return group;
   };
 
@@ -56,8 +57,12 @@ export class DynamicFormComponent implements OnInit {
     return this.fb.control('', field.validator);
   };
 
+  private formArray = (field: Field): FormArray => {
+    return this.fb.array([], field.validator);
+  };
+
   private patchValue = ([form, data]: [FormGroup, any]) => {
-    data ? form.patchValue(data, { emitEvent: false }) : form.patchValue({}, { emitEvent: false });
+    data ? form.patchValue(data, {emitEvent: false}) : form.patchValue({}, {emitEvent: false});
   };
 
   private listenFormChanges(form: FormGroup) {

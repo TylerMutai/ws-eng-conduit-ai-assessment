@@ -15,7 +15,7 @@
  * will point to nx, which will perform optimizations before invoking ng. So the Angular CLI is always invoked.
  * The Nx CLI simply does some optimizations before invoking the Angular CLI.
  *
- * To opt out of this patch:
+ * To control out of this patch:
  * - Replace occurrences of nx with ng in your package.json
  * - Remove the script from your postinstall script in your package.json
  * - Delete and reinstall your node_modules

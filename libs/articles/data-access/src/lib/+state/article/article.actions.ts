@@ -1,5 +1,5 @@
-import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Article, Profile, Comment } from '@realworld/core/api-types';
+import {createActionGroup, emptyProps, props} from '@ngrx/store';
+import {Article, Comment, Profile, UserNoAuth} from '@realworld/core/api-types';
 
 export const articleActions = createActionGroup({
   source: 'Article',
@@ -7,6 +7,8 @@ export const articleActions = createActionGroup({
     loadArticle: props<{ slug: string }>(),
     loadArticleFailure: props<{ error: Error }>(),
     loadArticleSuccess: props<{ article: Article }>(),
+    loadAuthors: emptyProps(),
+    loadAuthorsSuccess: props<{ authors: UserNoAuth[] }>(),
     deleteArticle: props<{ slug: string }>(),
     deleteArticleFailure: props<{ error: Error }>(),
     deleteArticleSuccess: emptyProps(),
