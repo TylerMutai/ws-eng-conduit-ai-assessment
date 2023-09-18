@@ -8,8 +8,8 @@ import {Article} from './article.entity';
 import {IArticleRO, IArticlesRO, ICommentsRO} from './article.interface';
 import {Comment} from './comment.entity';
 import {CreateArticleDto, CreateCommentDto} from './dto';
-import {Tag} from "../tag/tag.entity";
-import {IArticleTagRO} from "../articleTag/articleTag.interface";
+import {Tag} from '../tag/tag.entity';
+import {IArticleTagRO} from '../articleTag/articleTag.interface';
 import {ArticleTag} from "../articleTag/articleTag.entity";
 
 @Injectable()
@@ -31,10 +31,10 @@ export class ArticleService {
     const user = userId
       ? await this.userRepository.findOne(userId, {populate: ['followers', 'favorites']})
       : undefined;
-    const qb = this.articleRepository.createQueryBuilder('a').select('a.*').leftJoin('a.author', 'u');
+    const qb = this.articleRepository.createQueryBuilder('a').select('a.*').leftJoin('a.author', 'u').leftJoinAndSelect('a.tagList', 'at');
 
     if ('tag' in query) {
-      qb.andWhere({tagList: new RegExp(query.tag)});
+      qb.where({'at.name': [new RegExp(query.tag)]});
     }
 
     if ('author' in query) {
@@ -89,7 +89,6 @@ export class ArticleService {
       },
     );
 
-    console.log('findFeed', {articles: res[0], articlesCount: res[1]});
     return {articles: res[0].map((a) => a.toJSON(user!)), articlesCount: res[1]};
   }
 
@@ -162,8 +161,7 @@ export class ArticleService {
     const article = new Article(user!, dto.title, dto.description, dto.body);
     user?.articles.add(article);
     await this.em.flush();
-    const tags = this.tagsToArticleTags(await this.generateMissingTagsFromString(dto.tagList), article);
-    await this.em.upsertMany(ArticleTag, tags.map(t => ({article: t.articleId, tag: t.tagId})));
+    await this.addArticleTagsToTransaction(this.tagsToArticleTags(await this.generateMissingTagsFromString(dto.tagList), article));
     return {article: article.toJSON(user!)};
   }
 
@@ -174,6 +172,10 @@ export class ArticleService {
     );
     const article = await this.articleRepository.findOne({slug}, {populate: ['author']});
     delete articleData.createdAt;
+    if (article) {
+      await this.addArticleTagsToTransaction(this.tagsToArticleTags(await this.generateMissingTagsFromString(articleData.tagList), article));
+      delete articleData.tagList;
+    }
     wrap(article).assign(articleData);
     await this.em.flush();
 
@@ -184,18 +186,25 @@ export class ArticleService {
     return this.articleRepository.nativeDelete({slug});
   }
 
-  tagsToArticleTags(tags: Tag[], article: Article): IArticleTagRO[] {
+  private async addArticleTagsToTransaction(articles: IArticleTagRO[]) {
+    for (const t of articles) {
+      this.em.persist(Object.assign(new ArticleTag(), {article: t.articleId, tag: t.tagId}));
+    }
+    await this.em.flush();
+  }
+
+  private tagsToArticleTags(tags: Tag[], article: Article): IArticleTagRO[] {
     const articleTags: IArticleTagRO[] = [];
     for (const t of tags) {
       articleTags.push({
         articleId: article.id,
-        tagId: t.id
+        tagId: t.id,
       });
     }
     return articleTags;
   }
 
-  async generateMissingTagsFromString(tags: string | Array<string>): Promise<Tag[]> {
+  private async generateMissingTagsFromString(tags: string | Array<string>): Promise<Tag[]> {
     let newTags: string[];
     const delimiter = ',';
     if (typeof tags === 'string') {
@@ -215,14 +224,20 @@ export class ArticleService {
     const newTagEntities: Tag[] = [];
     for (const cleanedTag of cleanedTags) {
       const t = new Tag();
-      const id = nameToIdMapping.get(cleanedTag)
+      const id = nameToIdMapping.get(cleanedTag);
       if (id) {
         t.id = id;
       }
-      t.tag = cleanedTag;
+      if (cleanedTag) {
+        t.tag = cleanedTag;
+      }
+      if (!id && cleanedTag) {
+        this.em.persist(t);
+      }
       newTagEntities.push(t);
     }
-    return await this.tagRepository.upsertMany(newTagEntities);
+    await this.em.flush();
+    return newTagEntities;
   }
 
   private cleanTags(tags: Array<string>): Array<string> {
@@ -239,6 +254,4 @@ export class ArticleService {
   private getCleanedTagName(tagName: string) {
     return tagName.trim().toLowerCase();
   }
-
-
 }

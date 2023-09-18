@@ -1,8 +1,8 @@
-import {EntityManager} from '@mikro-orm/core';
-import {Seeder} from '@mikro-orm/seeder';
-import {Article} from '../article/article.entity';
-import {Tag} from '../tag/tag.entity';
-import {User} from '../user/user.entity';
+import { EntityManager } from '@mikro-orm/core';
+import { Seeder } from '@mikro-orm/seeder';
+import { Article } from '../article/article.entity';
+import { Tag } from '../tag/tag.entity';
+import { User } from '../user/user.entity';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -44,10 +44,10 @@ export class DatabaseSeeder extends Seeder {
 
   private getTags(em: EntityManager): Record<string, Tag> {
     return {
-      coding: em.create(Tag, {tag: 'coding'}),
-      javascript: em.create(Tag, {tag: 'javascript'}),
-      angular: em.create(Tag, {tag: 'angular'}),
-      react: em.create(Tag, {tag: 'react'}),
+      coding: em.create(Tag, { tag: 'coding' }),
+      javascript: em.create(Tag, { tag: 'javascript' }),
+      angular: em.create(Tag, { tag: 'angular' }),
+      react: em.create(Tag, { tag: 'react' }),
     };
   }
 

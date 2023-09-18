@@ -7,7 +7,7 @@ import {ArticleController} from './article.controller';
 import {Article} from './article.entity';
 import {ArticleService} from './article.service';
 import {Comment} from './comment.entity';
-import {Tag} from "../tag/tag.entity";
+import {Tag} from '../tag/tag.entity';
 
 @Module({
   controllers: [ArticleController],

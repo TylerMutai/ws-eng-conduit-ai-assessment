@@ -13,8 +13,8 @@ import slug from 'slug';
 
 import {User} from '../user/user.entity';
 import {Comment} from './comment.entity';
-import {ArticleTag} from "../articleTag/articleTag.entity";
-import {Tag} from "../tag/tag.entity";
+import {ArticleTag} from '../articleTag/articleTag.entity';
+import {Tag} from '../tag/tag.entity';
 
 @Entity()
 export class Article {
@@ -63,11 +63,12 @@ export class Article {
     const o = wrap<Article>(this).toObject() as ArticleDTO;
     o.favorited = user && user.favorites.isInitialized() ? user.favorites.contains(this) : false;
     o.author = this.author.toJSON(user);
-
+    o.tags = this.tagList?.toJSON()?.map(t => t.tag);
     return o;
   }
 }
 
 export interface ArticleDTO extends EntityDTO<Article> {
   favorited?: boolean;
+  tags: string[]
 }

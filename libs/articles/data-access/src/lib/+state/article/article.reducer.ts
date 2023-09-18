@@ -1,8 +1,8 @@
-import { Article, Comment } from '@realworld/core/api-types';
-import { createFeature, createReducer, on } from '@ngrx/store';
-import { articleActions } from './article.actions';
-import { articlesActions } from '../articles.actions';
-import { articleEditActions } from '../article-edit/article-edit.actions';
+import {Article, Comment} from '@realworld/core/api-types';
+import {createFeature, createReducer, on} from '@ngrx/store';
+import {articleActions} from './article.actions';
+import {articlesActions} from '../articles.actions';
+import {articleEditActions} from '../article-edit/article-edit.actions';
 
 export interface ArticleState {
   data: Article;
@@ -18,6 +18,7 @@ export const articleInitialState: ArticleState = {
     description: '',
     body: '',
     tagList: [],
+    tags: [],
     createdAt: '',
     updatedAt: '',
     favorited: false,
@@ -53,11 +54,11 @@ export const articleFeature = createFeature({
     })),
     on(articleActions.addCommentSuccess, (state, action) => {
       const comments: Comment[] = [action.comment, ...state.comments];
-      return { ...state, comments };
+      return {...state, comments};
     }),
     on(articleActions.deleteCommentSuccess, (state, action) => {
       const comments: Comment[] = state.comments.filter((item) => item.id !== action.commentId);
-      return { ...state, comments };
+      return {...state, comments};
     }),
     on(
       articleActions.initializeArticle,
@@ -74,8 +75,8 @@ export const articleFeature = createFeature({
       comments: articleInitialState.comments,
     })),
     on(articleActions.followSuccess, articleActions.unfollowSuccess, (state, action) => {
-      const data: Article = { ...state.data, author: action.profile };
-      return { ...state, data };
+      const data: Article = {...state.data, author: action.profile};
+      return {...state, data};
     }),
     on(articlesActions.favoriteSuccess, articlesActions.unfavoriteSuccess, (state, action) => ({
       ...state,

@@ -1,7 +1,7 @@
 <div class="article-preview">
   <div class="article-meta">
     <a>
-      <img [src]="article.author.image" />
+      <img [src]="article.author.image"/>
     </a>
     <div class="info">
       <a data-e2e-id="article-author" class="author" [routerLink]="['/profile', article.author.username]">
@@ -28,7 +28,7 @@
     <p>{{ article.description }}</p>
     <span>Read more...</span>
     <ul class="tag-list">
-      <li class="tag-default tag-pill tag-outline" *ngFor="let tag of article.tagList">
+      <li class="tag-default tag-pill tag-outline" *ngFor="let tag of article.tags">
         {{ tag }}
       </li>
     </ul>
